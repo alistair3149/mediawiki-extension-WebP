@@ -107,10 +107,10 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 	public function onPictureHtmlSupportBeforeProduceHtml( ThumbnailImage $thumbnail, array &$sources ): void {
 		// File does not exist or is external; Or Thumbhandler is active
 		if (
-			$thumbnail->getStoragePath() === false ||
-			$this->mainConfig->get( 'GenerateThumbnailOnParse' ) === false ||
-			( $thumbnail->getFile()->getRepo() instanceof IForeignRepoWithMWApi ) ||
-			( $thumbnail->fileIsSource() && $thumbnail->getFile()->getPath() === false )
+            $this->mainConfig->get( 'GenerateThumbnailOnParse' ) === false ||
+            ( $thumbnail->getFile()->getRepo() instanceof IForeignRepoWithMWApi ) ||
+            ( !$thumbnail->fileIsSource() && $thumbnail->getStoragePath() === false ) ||
+            ( $thumbnail->fileIsSource() && $thumbnail->getFile()->getPath() === false )
 		) {
 			return;
 		}
@@ -125,9 +125,9 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 		foreach ( $this->mainConfig->get( 'EnabledTransformers' ) as $transformer ) {
 			$dir = $transformer::getFileExtension();
 
-			if ( $thumbnail->fileIsSource() ) {
-				$url = $transformer::changeExtension( $thumbnail->getUrl() );
-				$pos = strpos( $url, 'images' ) + 6;
+            $url = $transformer::changeExtension( $thumbnail->getUrl() );
+            if ( $thumbnail->fileIsSource() ) {
+                $pos = strpos( $url, 'images' ) + 6;
 				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
 
 				$path = $repo->getZonePath( 'public' );
@@ -135,8 +135,7 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 				$filePath = explode( $hash, $thumbnail->getFile()->getPath() );
 				$filePath = array_pop( $filePath );
 			} else {
-				$url = $transformer::changeExtension( $thumbnail->getUrl() );
-				$pos = strpos( $url, 'thumb' ) + 5;
+                $pos = strpos( $url, 'thumb' ) + 5;
 				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
 
 				$path = $repo->getZonePath( 'thumb' );
@@ -194,10 +193,11 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 				continue;
 			}
 
+            $mime = $transformer::getMimeType();
 			// The transformed file exists and is added to the output
-			$sources[ $transformer::getMimeType() ] = [
+			$sources[ $mime ] = [
 				'srcset' => $url,
-				'type' => $transformer::getMimeType(),
+				'type' => $mime,
 				'width' => $thumbnail->getWidth(),
 				'height' => $thumbnail->getHeight(),
 			];
