@@ -296,7 +296,7 @@ abstract class AbstractBaseTransformer implements MediaTransformer {
 	 * @param File $file
 	 * @return GdImage|false
 	 */
-	protected function createGDImage( File $file ): GdImage | false {
+	protected function createGDImage( File $file ): GdImage|false {
 		switch ( $file->getMimeType() ) {
 			case 'image/jpg':
 			case 'image/jpeg':

@@ -102,6 +102,9 @@ class ThumbnailHooksTest extends \MediaWikiIntegrationTestCase {
 		$repoMock = $this->getMockBuilder( RepoGroup::class )->disableOriginalConstructor()->getMock();
 		$repoMock->expects( $this->never() )->method( 'getLocalRepo' );
 
+		$thumbnailMock->method( 'getFile' )
+			->willReturn( $this->getMockBuilder( File::class )->disableOriginalConstructor()->getMock() );
+
 		$hooks = new ThumbnailHooks(
 			$this->getServiceContainer()->getMainConfig(),
 			$repoMock,
@@ -153,7 +156,7 @@ class ThumbnailHooksTest extends \MediaWikiIntegrationTestCase {
 		$fileMock->expects( $this->once() )->method( 'getRepo' )->willReturn( $foreignRepo );
 
 		$thumbnailMock = $this->getMockBuilder( ThumbnailImage::class )->disableOriginalConstructor()->getMock();
-		$thumbnailMock->expects( $this->once() )->method( 'getStoragePath' )->willReturn( '<path>' );
+		$thumbnailMock->expects( $this->never() )->method( 'getStoragePath' )->willReturn( '<path>' );
 		$thumbnailMock->expects( $this->atLeast( 1 ) )->method( 'getFile' )->willReturn( $fileMock );
 
 		$repoMock = $this->getMockBuilder( RepoGroup::class )->disableOriginalConstructor()->getMock();
@@ -186,8 +189,7 @@ class ThumbnailHooksTest extends \MediaWikiIntegrationTestCase {
 		$fileMock->expects( $this->once() )->method( 'getPath' )->willReturn( false );
 
 		$thumbnailMock = $this->getMockBuilder( ThumbnailImage::class )->disableOriginalConstructor()->getMock();
-		$thumbnailMock->expects( $this->once() )->method( 'getStoragePath' )->willReturn( '<path>' );
-		$thumbnailMock->expects( $this->once() )->method( 'fileIsSource' )->willReturn( true );
+		$thumbnailMock->expects( $this->atLeast( 1 ) )->method( 'fileIsSource' )->willReturn( true );
 		$thumbnailMock->expects( $this->atLeast( 1 ) )->method( 'getFile' )->willReturn( $fileMock );
 
 		$repoMock = $this->getMockBuilder( RepoGroup::class )->disableOriginalConstructor()->getMock();

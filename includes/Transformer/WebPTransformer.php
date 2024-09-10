@@ -43,12 +43,12 @@ class WebPTransformer extends AbstractBaseTransformer {
 	 * @var string[]
 	 */
 	public static $supportedMimes = [
-		'image/jpeg',
-		'image/jpg',
-		'image/png',
-		// MW generates png/jpg thumbs for webp files
-		'image/webp',
-		// 'image/gif',
+	'image/jpeg',
+	'image/jpg',
+	'image/png',
+	// MW generates png/jpg thumbs for webp files
+	'image/webp',
+	// 'image/gif',
 	];
 
 	/**
@@ -58,11 +58,11 @@ class WebPTransformer extends AbstractBaseTransformer {
 	 */
 	public static function checkExtensionsLoaded(): bool {
 		return ( extension_loaded( 'imagick' ) && !empty( Imagick::queryformats( 'WebP' ) ) ) ||
-			( extension_loaded( 'gd' ) && ( gd_info()['WebP Support'] ?? false ) === true ) ||
-			(
-				!Shell::isDisabled() &&
-				is_executable( MediaWikiServices::getInstance()->getMainConfig()->get( 'WebPCWebPLocation' ) )
-			);
+		( extension_loaded( 'gd' ) && ( gd_info()['WebP Support'] ?? false ) === true ) ||
+		(
+		!Shell::isDisabled() &&
+		is_executable( MediaWikiServices::getInstance()->getMainConfig()->get( 'WebPCWebPLocation' ) )
+		);
 	}
 
 	/**
@@ -116,14 +116,14 @@ class WebPTransformer extends AbstractBaseTransformer {
 
 		$command->unsafeParams(
 			[
-				$this->getConfigValue( 'WebPCWebPLocation' ),
-				'-quiet',
-				$resize,
-				sprintf( '-q %d', $this->getConfigValue( 'WebPCompressionQuality' ) ),
-				sprintf( '-alpha_q %d', $this->getConfigValue( 'WebPFilterStrength' ) ),
-				$this->getConfigValue( 'WebPAutoFilter' ) ? '-af' : '',
-				$this->file->getLocalRefPath(),
-				sprintf( '-o %s', $outPath ),
+			$this->getConfigValue( 'WebPCWebPLocation' ),
+			'-quiet',
+			$resize,
+			sprintf( '-q %d', $this->getConfigValue( 'WebPCompressionQuality' ) ),
+			sprintf( '-alpha_q %d', $this->getConfigValue( 'WebPFilterStrength' ) ),
+			$this->getConfigValue( 'WebPAutoFilter' ) ? '-af' : '',
+			$this->file->getLocalRefPath(),
+			sprintf( '-o %s', $outPath ),
 			]
 		);
 

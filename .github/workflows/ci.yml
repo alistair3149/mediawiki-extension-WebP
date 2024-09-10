@@ -71,4 +71,6 @@ jobs:
         run: composer update
 
       - name: Run PHPUnit
-        run: composer phpunit:entrypoint -- --group WebP
+        # :entrypoint seems to not work on 1.42
+        run: php tests/phpunit/phpunit.php -c tests/phpunit/suite.xml --group WebP
+#        run: composer phpunit:entrypoint -- --group WebP

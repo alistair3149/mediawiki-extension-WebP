@@ -33,6 +33,7 @@ interface MediaTransformer {
 
 	/**
 	 * Transform the image like the passed thumbnail image
+	 *
 	 * @param int $width Width of the thumb, height is inferred automatically
 	 * @return Status
 	 */
@@ -40,6 +41,7 @@ interface MediaTransformer {
 
 	/**
 	 * Transform the source image
+	 *
 	 * @return Status
 	 */
 	public function transform(): Status;

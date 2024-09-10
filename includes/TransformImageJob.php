@@ -88,8 +88,8 @@ class TransformImageJob extends Job {
 			$transformer = MediaWikiServices::getInstance()->getService( 'WebPTransformerFactory' )->getInstance(
 				$this->params['transformer'],
 				[
-					$file,
-					[ 'overwrite' => $overwrite ]
+				$file,
+				[ 'overwrite' => $overwrite ]
 				]
 			);
 		} catch ( InvalidArgumentException | RuntimeException $e ) {

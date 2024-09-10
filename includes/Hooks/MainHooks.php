@@ -107,8 +107,8 @@ class MainHooks implements UploadCompleteHook, FileUndeleteCompleteHook {
 				new TransformImageJob(
 					null,
 					[
-						'title' => $uploadBase->getTitle(),
-						'transformer' => $transformer,
+					'title' => $uploadBase->getTitle(),
+					'transformer' => $transformer,
 					]
 				)
 			);
@@ -130,8 +130,8 @@ class MainHooks implements UploadCompleteHook, FileUndeleteCompleteHook {
 				new TransformImageJob(
 					null,
 					[
-						'title' => $title,
-						'transformer' => $transformer,
+					'title' => $title,
+					'transformer' => $transformer,
 					]
 				)
 			);

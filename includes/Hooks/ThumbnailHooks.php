@@ -106,11 +106,10 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 	 */
 	public function onPictureHtmlSupportBeforeProduceHtml( ThumbnailImage $thumbnail, array &$sources ): void {
 		// File does not exist or is external; Or Thumbhandler is active
-		if (
-            $this->mainConfig->get( 'GenerateThumbnailOnParse' ) === false ||
-            ( $thumbnail->getFile()->getRepo() instanceof IForeignRepoWithMWApi ) ||
-            ( !$thumbnail->fileIsSource() && $thumbnail->getStoragePath() === false ) ||
-            ( $thumbnail->fileIsSource() && $thumbnail->getFile()->getPath() === false )
+		if ( $this->mainConfig->get( 'GenerateThumbnailOnParse' ) === false
+			|| ( $thumbnail->getFile()->getRepo() instanceof IForeignRepoWithMWApi )
+			|| ( !$thumbnail->fileIsSource() && $thumbnail->getStoragePath() === false )
+			|| ( $thumbnail->fileIsSource() && $thumbnail->getFile()->getPath() === false )
 		) {
 			return;
 		}
@@ -125,9 +124,9 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 		foreach ( $this->mainConfig->get( 'EnabledTransformers' ) as $transformer ) {
 			$dir = $transformer::getFileExtension();
 
-            $url = $transformer::changeExtension( $thumbnail->getUrl() );
-            if ( $thumbnail->fileIsSource() ) {
-                $pos = strpos( $url, 'images' ) + 6;
+			$url = $transformer::changeExtension( $thumbnail->getUrl() );
+			if ( $thumbnail->fileIsSource() ) {
+				$pos = strpos( $url, 'images' ) + 6;
 				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
 
 				$path = $repo->getZonePath( 'public' );
@@ -135,7 +134,7 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 				$filePath = explode( $hash, $thumbnail->getFile()->getPath() );
 				$filePath = array_pop( $filePath );
 			} else {
-                $pos = strpos( $url, 'thumb' ) + 5;
+				$pos = strpos( $url, 'thumb' ) + 5;
 				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
 
 				$path = $repo->getZonePath( 'thumb' );
@@ -144,7 +143,7 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 				$filePath = array_pop( $filePath );
 
 				$srcset = [
-					$url
+				$url
 				];
 
 				if ( $this->mainConfig->get( 'ResponsiveImages' ) ) {
@@ -155,14 +154,16 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 						$resUrl = str_replace( (string)$thumbnail->getWidth() . $suffix, (string)$res . $suffix, $url );
 
 						if ( $this->mainConfig->get( 'WebPEnableResponsiveVersionJobs' ) === true ) {
-							$this->jobQueueGroup->push( new TransformImageJob(
-								null,
-								[
+							$this->jobQueueGroup->push(
+								new TransformImageJob(
+									null,
+									[
 									'title' => $thumbnail->getFile()->getTitle(),
 									'transformer' => $transformer,
 									'width' => $res,
-								]
-							) );
+									]
+								)
+							);
 						}
 
 						$srcset[] = sprintf( '%s %sx', $resUrl, $resolution );
@@ -178,14 +179,14 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 			// If not, a job will be dispatched
 			if ( !$repo->fileExists( $path ) ) {
 				$params = [
-					'title' => $thumbnail->getFile()->getTitle(),
-					'transformer' => $transformer,
+				'title' => $thumbnail->getFile()->getTitle(),
+				'transformer' => $transformer,
 				];
 
 				if ( !$thumbnail->fileIsSource() ) {
 					$params += [
-						'width' => $thumbnail->getWidth(),
-						'height' => $thumbnail->getHeight(),
+					'width' => $thumbnail->getWidth(),
+					'height' => $thumbnail->getHeight(),
 					];
 				}
 
@@ -193,13 +194,13 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 				continue;
 			}
 
-            $mime = $transformer::getMimeType();
+			$mime = $transformer::getMimeType();
 			// The transformed file exists and is added to the output
 			$sources[ $mime ] = [
-				'srcset' => $url,
-				'type' => $mime,
-				'width' => $thumbnail->getWidth(),
-				'height' => $thumbnail->getHeight(),
+			'srcset' => $url,
+			'type' => $mime,
+			'width' => $thumbnail->getWidth(),
+			'height' => $thumbnail->getHeight(),
 			];
 		}
 	}

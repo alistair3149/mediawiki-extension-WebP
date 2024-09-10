@@ -188,7 +188,7 @@ class FileHooksTest extends MediaWikiIntegrationTestCase {
 		$repoMock->expects( $this->atLeast( 1 ) )->method( 'quickCleanDir' );
 		$repoMock->expects( $this->atLeast( 2 ) )->method( 'newFile' )->willReturn( $fileMock );
 
-		$repoMock->expects( $this->atLeast( 1 ) )->method( 'getBackend' )->willReturn( new class(){
+		$repoMock->expects( $this->atLeast( 1 ) )->method( 'getBackend' )->willReturn( new class() {
 			public function prepare() {
 			}
 

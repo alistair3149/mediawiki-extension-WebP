@@ -24,7 +24,6 @@ namespace MediaWiki\Extension\WebP\Hooks;
 
 use Config;
 use ConfigException;
-use File;
 use JobQueueGroup;
 use LocalFile;
 use MediaWiki\Extension\WebP\TransformImageJob;
@@ -84,31 +83,39 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 				$file->getHashPath()
 			);
 
-			$oldThumbs = $repo->getBackend()->getFileList( [
+			$oldThumbs = $repo->getBackend()->getFileList(
+				[
 				'dir' => $oldThumbPath
-			] );
+				]
+			);
 
 			foreach ( $oldThumbs as $oldThumb ) {
-				$repo->quickPurge( sprintf( '%s/%s', $oldThumbPath, ltrim( $oldThumb, '/' ) ) );
+				   $repo->quickPurge( sprintf( '%s/%s', $oldThumbPath, ltrim( $oldThumb, '/' ) ) );
 			}
 
 			$repo->quickPurge( sprintf( '%s/%s', $oldPath, $transformer::changeExtension( $file->getName() ) ) );
 
-			$repo->quickCleanDir( sprintf(
-				'%s/%s',
-				$oldThumbPath,
-				ltrim( $file->getName(), '/' )
-			) );
-			$repo->quickCleanDir( sprintf(
-				'%s/%s',
-				$repo->getZonePath( 'public' ),
-				$transformer::getFileExtension()
-			) );
-			$repo->quickCleanDir( sprintf(
-				'%s/%s',
-				$repo->getZonePath( 'thumb' ),
-				$transformer::getFileExtension()
-			) );
+			$repo->quickCleanDir(
+				sprintf(
+					'%s/%s',
+					$oldThumbPath,
+					ltrim( $file->getName(), '/' )
+				)
+			);
+			$repo->quickCleanDir(
+				sprintf(
+					'%s/%s',
+					$repo->getZonePath( 'public' ),
+					$transformer::getFileExtension()
+				)
+			);
+			$repo->quickCleanDir(
+				sprintf(
+					'%s/%s',
+					$repo->getZonePath( 'thumb' ),
+					$transformer::getFileExtension()
+				)
+			);
 		}
 	}
 
@@ -131,10 +138,10 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 				new TransformImageJob(
 					null,
 					[
-						'transformer' => $transformer,
-						'title' => $file->getTitle(),
-						'width' => $thumb->getWidth(),
-						'height' => $thumb->getHeight(),
+					'transformer' => $transformer,
+					'title' => $file->getTitle(),
+					'width' => $thumb->getWidth(),
+					'height' => $thumb->getHeight(),
 					]
 				)
 			);
@@ -150,7 +157,7 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 		$repo = $this->repoGroup->getLocalRepo();
 
 		$oldFile = $repo->newFile(
-			 $old->getText()
+			$old->getText()
 		);
 
 		$newFile = $repo->newFile(
@@ -161,8 +168,8 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 			return;
 		}
 
-		$oldFile->load( File::READ_LATEST );
-		$newFile->load( File::READ_LATEST );
+		$oldFile->load();
+		$newFile->load();
 
 		foreach ( $this->mainConfig->get( 'EnabledTransformers' ) as $transformer ) {
 			$path = sprintf( '%s/%s', $repo->getZonePath( 'public' ), $transformer::getFileExtension() );
@@ -180,14 +187,16 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 				$transformer::changeExtension( $newFile->getName() )
 			);
 
-			$repo->getBackend()->prepare( [
+			$repo->getBackend()->prepare(
+				[
 				'dir' => $this->getDirPath( $newPath )
-			] );
+				]
+			);
 
 			$status = $repo->getBackend()->move(
 				[
-					'src' => $oldPath,
-					'dst' => $newPath,
+				'src' => $oldPath,
+				'dst' => $newPath,
 				]
 			);
 
@@ -241,19 +250,23 @@ class FileHooks implements FileTransformedHook, FileDeleteCompleteHook, PageMove
 			$ending = pathinfo( $newName, PATHINFO_EXTENSION );
 			$newName = str_replace( $ending, '', $newName );
 
-			$repo->getBackend()->prepare( [
+			$repo->getBackend()->prepare(
+				[
 				'dir' => sprintf( '%s%s%s', $newPath, ltrim( $newName, '/' ), $ending )
-			] );
+				]
+			);
 
-			$files = $repo->getBackend()->getFileList( [
+			$files = $repo->getBackend()->getFileList(
+				[
 				'dir' => $oldPath
-			] );
+				]
+			);
 
 			foreach ( $files as $file ) {
 				$repo->getBackend()->move(
 					[
-						'src' => sprintf( '%s%s', $oldPath, $file ),
-						'dst' => sprintf( '%s%s', $newPath, str_replace( $oldName, $newName, $file ) ),
+					 'src' => sprintf( '%s%s', $oldPath, $file ),
+					 'dst' => sprintf( '%s%s', $newPath, str_replace( $oldName, $newName, $file ) ),
 					]
 				);
 			}

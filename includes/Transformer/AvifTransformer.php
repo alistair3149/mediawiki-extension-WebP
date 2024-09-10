@@ -44,11 +44,11 @@ class AvifTransformer extends AbstractBaseTransformer {
 	 * @var string[]
 	 */
 	public static $supportedMimes = [
-		'image/jpeg',
-		'image/jpg',
-		'image/png',
-		'image/webp',
-		// 'image/gif',
+	'image/jpeg',
+	'image/jpg',
+	'image/png',
+	'image/webp',
+	// 'image/gif',
 	];
 
 	/**
@@ -59,7 +59,7 @@ class AvifTransformer extends AbstractBaseTransformer {
 	 */
 	public static function checkExtensionsLoaded(): bool {
 		return ( ( extension_loaded( 'imagick' ) && !empty( Imagick::queryformats( 'AVIF' ) ) ) ||
-			( extension_loaded( 'gd' ) && ( gd_info()['AVIF Support'] ?? false ) === true ) );
+		( extension_loaded( 'gd' ) && ( gd_info()['AVIF Support'] ?? false ) === true ) );
 	}
 
 	/**
@@ -95,11 +95,10 @@ class AvifTransformer extends AbstractBaseTransformer {
 	 * @throws ImagickException
 	 */
 	private function transformAvifenc( string $outPath, int $width = -1 ): bool {
-		if (
-			Shell::isDisabled() ||
-			!is_executable( $this->getConfigValue( 'WebPAvifencLocation' ) ) ||
+		if ( Shell::isDisabled()
+			|| !is_executable( $this->getConfigValue( 'WebPAvifencLocation' ) )
 			// avifenc can't rescale images, so we need a preliminary step
-			( !extension_loaded( 'imagick' ) && $width > 0 )
+			|| ( !extension_loaded( 'imagick' ) && $width > 0 )
 		) {
 			return false;
 		}
@@ -123,17 +122,17 @@ class AvifTransformer extends AbstractBaseTransformer {
 		// Based on https://github.com/spatie/image-optimizer
 		$command->unsafeParams(
 			[
-				$this->getConfigValue( 'WebPAvifencLocation' ),
-				'-a cq-level=18',
-				'-j all',
-				'--min 0',
-				'--max 63',
-				'--minalpha 0',
-				'--minalpha 63',
-				'-a end-usage=q',
-				'-a tune=ssim',
-				$width > 0 ? $tempFile->getPath() : $this->file->getLocalRefPath(),
-				$outPath,
+			$this->getConfigValue( 'WebPAvifencLocation' ),
+			'-a cq-level=18',
+			'-j all',
+			'--min 0',
+			'--max 63',
+			'--minalpha 0',
+			'--minalpha 63',
+			'-a end-usage=q',
+			'-a tune=ssim',
+			$width > 0 ? $tempFile->getPath() : $this->file->getLocalRefPath(),
+			$outPath,
 			]
 		);
 
@@ -202,10 +201,9 @@ class AvifTransformer extends AbstractBaseTransformer {
 	 * @return bool
 	 */
 	private function transformGD( string $outPath, int $width = -1 ): bool {
-		if (
-			!extension_loaded( 'gd' ) ||
-			PHP_VERSION_ID < 80100 ||
-			( gd_info()['AVIF Support'] ?? false ) === false
+		if ( !extension_loaded( 'gd' )
+			|| PHP_VERSION_ID < 80100
+			|| ( gd_info()['AVIF Support'] ?? false ) === false
 		) {
 			return false;
 		}

@@ -48,9 +48,11 @@ class TransformerFactory {
 				return new AvifTransformer( ...$args );
 
 			default:
-				throw new InvalidArgumentException( sprintf(
+				throw new InvalidArgumentException(
+				sprintf(
 					'Transformer "%s" not recognized', $className
-				) );
+				)
+			);
 		}
 	}
 }

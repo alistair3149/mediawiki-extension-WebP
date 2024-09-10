@@ -31,6 +31,6 @@ class MediaWikiServices implements MediaWikiServicesHook {
 	 * @inheritDoc
 	 */
 	public function onMediaWikiServices( $services ): void {
-		$services->defineService( 'WebPTransformerFactory', fn() => new TransformerFactory() );
+		$services->defineService( 'WebPTransformerFactory', fn () => new TransformerFactory() );
 	}
 }
