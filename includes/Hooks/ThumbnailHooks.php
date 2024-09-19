@@ -125,26 +125,21 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 			$dir = $transformer::getFileExtension();
 
 			$url = $transformer::changeExtension( $thumbnail->getUrl() );
-			if ( $thumbnail->fileIsSource() ) {
-				$pos = strpos( $url, 'images' ) + 6;
-				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
+			$pos = strpos( $url, $thumbnail->getFile()->getHashPath() ) - 1;
+			$url = substr_replace( $url, '/' . $dir, $pos, 0 );
 
+			if ( $thumbnail->fileIsSource() ) {
 				$path = $repo->getZonePath( 'public' );
 
 				$filePath = explode( $hash, $thumbnail->getFile()->getPath() );
 				$filePath = array_pop( $filePath );
 			} else {
-				$pos = strpos( $url, 'thumb' ) + 5;
-				$url = substr_replace( $url, '/' . $dir, $pos, 0 );
-
 				$path = $repo->getZonePath( 'thumb' );
 
 				$filePath = explode( $hash, $thumbnail->getStoragePath() );
 				$filePath = array_pop( $filePath );
 
-				$srcset = [
-				$url
-				];
+				$srcset = [ $url ];
 
 				if ( $this->mainConfig->get( 'ResponsiveImages' ) ) {
 					// Add higher resolutions to the srcset
@@ -158,9 +153,9 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 								new TransformImageJob(
 									null,
 									[
-									'title' => $thumbnail->getFile()->getTitle(),
-									'transformer' => $transformer,
-									'width' => $res,
+										'title' => $thumbnail->getFile()->getTitle(),
+										'transformer' => $transformer,
+										'width' => $res,
 									]
 								)
 							);
@@ -179,14 +174,14 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 			// If not, a job will be dispatched
 			if ( !$repo->fileExists( $path ) ) {
 				$params = [
-				'title' => $thumbnail->getFile()->getTitle(),
-				'transformer' => $transformer,
+					'title' => $thumbnail->getFile()->getTitle(),
+					'transformer' => $transformer,
 				];
 
 				if ( !$thumbnail->fileIsSource() ) {
 					$params += [
-					'width' => $thumbnail->getWidth(),
-					'height' => $thumbnail->getHeight(),
+						'width' => $thumbnail->getWidth(),
+						'height' => $thumbnail->getHeight(),
 					];
 				}
 
@@ -197,10 +192,10 @@ class ThumbnailHooks implements LocalFilePurgeThumbnailsHook, PictureHtmlSupport
 			$mime = $transformer::getMimeType();
 			// The transformed file exists and is added to the output
 			$sources[ $mime ] = [
-			'srcset' => $url,
-			'type' => $mime,
-			'width' => $thumbnail->getWidth(),
-			'height' => $thumbnail->getHeight(),
+				'srcset' => $url,
+				'type' => $mime,
+				'width' => $thumbnail->getWidth(),
+				'height' => $thumbnail->getHeight(),
 			];
 		}
 	}
